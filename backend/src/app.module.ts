@@ -16,7 +16,7 @@ import { StaffModule } from './staff/staff.module';
       port: 3306,
       username: 'root',
       password: 'fame1234',
-      database: 'room_reservation',
+      database: 'reservation_db',
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
