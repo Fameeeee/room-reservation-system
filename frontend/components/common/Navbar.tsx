@@ -23,6 +23,8 @@ import {
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { User } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 const items = [
   { label: "Home", href: "/" },
@@ -30,25 +32,61 @@ const items = [
   { label: "Contact", href: "/contact" },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const Navbar = () => {
   const [dialog, setDialog] = useState<"signin" | "signup" | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     setToken(localStorage.getItem("token"));
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("token", "dummy-token");
-    setToken("dummy-token");
-    setDialog(null);
+    setLoading(true);
+    setError(null);
+
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+
+    try {
+      const url =
+        dialog === "signin"
+          ? `${API_URL}/auth/login`
+          : `${API_URL}/auth/register`;
+      const res = await axios.post(url, payload);
+      localStorage.setItem("token", res.data.token);
+      setToken(res.data.token);
+      setDialog(null);
+
+      toast(dialog === "signin" ? res.data.message : res.data.message, {
+        description:
+          dialog === "signin"
+            ? "You have been logged in."
+            : "You have been registered.",
+      });
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "Authentication failed";
+      setError(msg);
+      toast("Error", {
+        description: msg,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    toast("Logged out successfully", {
+      description: "You have been logged out.",
+    });
   };
 
   return (

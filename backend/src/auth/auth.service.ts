@@ -26,7 +26,7 @@ export class AuthService {
     const hashed = await bcrypt.hash(password, 10);
     const user = this.usersRepository.create({ name, email, password: hashed });
     await this.usersRepository.save(user);
-    return { status: 'success', message: 'User registered successfully' };
+    return { status: 'success', message: 'Registered successfully' };
   }
 
   async login(email: string, password: string) {

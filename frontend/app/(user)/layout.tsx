@@ -1,6 +1,7 @@
 import Navbar from "@/components/common/Navbar";
 import React from "react";
 import "../../app/globals.css";
+import { Toaster } from "sonner";
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,6 +9,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       <body>
         <Navbar />
         <main className="mt-5">{children}</main>
+        <Toaster />
       </body>
     </html>
   );
